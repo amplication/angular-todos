@@ -1,2 +1,8 @@
-<app-create-task (addTask)="addTask($event)"></app-create-task>
-<app-tasks [tasks]="tasks" (completed)="completed($event)"></app-tasks>
+<ng-container *ngIf="user; else auth">
+  <app-create-task (addTask)="addTask($event)"></app-create-task>
+  <app-tasks [tasks]="tasks" (completed)="completed($event)"></app-tasks>
+</ng-container>
+
+<ng-template #auth>
+  <app-auth (setUser)="setUser($event)"></app-auth>
+</ng-template>

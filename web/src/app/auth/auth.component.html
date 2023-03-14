@@ -1,0 +1,12 @@
+<form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+  <h2>{{isLogin ? "Login" : "Sign Up"}}</h2>
+  <input name="username" type="text" placeholder="username" formControlName="username" required />
+  <input name="password" type="password" placeholder="password" formControlName="password" required />
+  <input *ngIf="!isLogin" name="confirmPassword" type="password" placeholder="confirm password"
+    formControlName="confirm" required />
+
+  <button type="submit">Submit</button>
+  <button type="button" (click)="isLogin = !isLogin">
+    {{isLogin ? "Need an account?" : "Already have an account?"}}
+  </button>
+</form>
