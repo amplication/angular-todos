@@ -12,6 +12,7 @@ import { TaskComponent } from './task/task.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { CreateTaskComponent } from './create-task/create-task.component';
 import { AuthComponent } from './auth/auth.component';
+import { GraphQLModule } from './graphql.module';
 
 @NgModule({
   declarations: [
@@ -24,10 +25,11 @@ import { AuthComponent } from './auth/auth.component';
   imports: [
     BrowserModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    GraphQLModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: JWTService, multi: true },
+    JWTService,
     AuthService,
     TasksService,
   ],

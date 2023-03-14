@@ -1,50 +1,107 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Apollo, gql } from 'apollo-angular';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import qs from 'qs';
-import { environment } from '../environments/environment';
+
+const CREATE_TASK = gql`
+  mutation createTask($data: TaskCreateInput!) {
+    createTask(data: $data) {
+      completed
+      createdAt
+      id
+      text
+    }
+  }
+`;
+
+const GET_TASKS = gql`
+  query tasks($where: TaskWhereInput, $orderBy: [TaskOrderByInput!]) {
+    tasks(where: $where, orderBy: $orderBy) {
+      completed
+      createdAt
+      id
+      text
+    }
+  }
+`;
+
+const UPDATE_TASK = gql`
+  mutation updateTask($data: TaskUpdateInput!, $where: TaskWhereUniqueInput!) {
+    updateTask(data: $data, where: $where) {
+      completed
+      createdAt
+      id
+      text
+    }
+  }
+`;
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TasksService {
-  constructor(private http: HttpClient) { }
+  constructor(private apollo: Apollo) { }
 
   create(text: string, uid: string) {
-    const url = new URL('/api/tasks', environment.apiUrl).href;
-    return this.http
-      .post(url, { completed: false, text, uid: { id: uid } })
+    return this.apollo
+      .mutate({
+        mutation: CREATE_TASK,
+        variables: {
+          data: {
+            completed: false,
+            text,
+            uid: { id: uid },
+          },
+        },
+      })
       .pipe(
-        catchError(() => of(null)),
-        map((result: any) => (result ? result : alert('Could not create task')))
+        catchError(() => of()),
+        map(({ data }: any) =>
+          data ? data.createTask : alert('Could not create task')
+        )
       );
   }
 
   getAll(uid: string) {
-    const query = qs.stringify({
-      where: { uid: { id: uid } },
-      orderBy: { createdAt: 'asc' },
-    });
-    const url = new URL(`/api/tasks?${query}`, environment.apiUrl).href;
-    return this.http.get(url).pipe(
-      catchError(() => of(null)),
-      map((result: any) => {
-        if (!result) {
-          alert('Could not get tasks');
-          return [];
-        }
-
-        return result;
+    return this.apollo
+      .query({
+        query: GET_TASKS,
+        variables: {
+          where: { uid: { id: uid } },
+          orderBy: { createdAt: 'Asc' },
+        },
       })
-    );
+      .pipe(
+        catchError(() => of()),
+        map(({ data }: any) => {
+          if (!data) {
+            alert('Could not get tasks');
+            return [];
+          }
+
+          return data.tasks;
+        })
+      );
   }
 
   update(task: any) {
-    const url = new URL(`/api/tasks/${task.id}`, environment.apiUrl).href;
-    return this.http.patch(url, { completed: !task.completed }).pipe(
-      catchError(() => of(null)),
-      map((result: any) => (result ? result : alert('Could not update task')))
-    );
+    return this.apollo
+      .mutate({
+        mutation: UPDATE_TASK,
+        variables: {
+          data: {
+            completed: !task.completed,
+          },
+          where: {
+            id: task.id,
+          },
+        },
+      })
+      .pipe(
+        catchError(() => of()),
+        map(({ data }: any) =>
+          data ? data.updateTask : alert('Could not update task')
+        )
+      );
   }
 }
