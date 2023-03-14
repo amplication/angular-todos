@@ -1,0 +1,4 @@
+<li [class.completed]="task.completed">
+  <span>{{task.text}}</span>
+  <input type="checkbox" [checked]="task.completed" (click)="completed.emit(task?.id)" readOnly />
+</li>

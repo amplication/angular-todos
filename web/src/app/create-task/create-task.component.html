@@ -1,0 +1,9 @@
+<form [formGroup]="createTaskForm" (ngSubmit)="onSubmit()">
+  <input
+    type="text"
+    placeholder="TODO"
+    formControlName="task"
+    required
+  />
+  <button type="submit">Add</button>
+</form>
