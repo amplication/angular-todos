@@ -5,6 +5,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AuthService } from './auth.service';
 import { JWTService } from './jwt.service';
+import { TasksService } from './tasks.service';
 
 import { AppComponent } from './app.component';
 import { TaskComponent } from './task/task.component';
@@ -28,6 +29,7 @@ import { AuthComponent } from './auth/auth.component';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JWTService, multi: true },
     AuthService,
+    TasksService,
   ],
   bootstrap: [AppComponent]
 })
